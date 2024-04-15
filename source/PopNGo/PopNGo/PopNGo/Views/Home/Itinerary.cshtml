@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Itinerary";
+}
+
+<div class="container-fluid" id="itinerary-container">
+    <div class="row">
+        <div class="col-md-6 px-xxl-5">
+            <h1 class="text-light" style="padding-left: 35px !important; padding-top: 10vh !important;">Create your Itinerary</h1>
+            <div class="panel-group mt-xxl-4 mb-xxl-5" id="accordion" role="tablist" aria-multiselectable="true">
+                <partial name="_DaySection" />
+                <partial name="_ChecklistSection" />
+            </div>
+            <div class="mt-2 mb-5">
+                <button class="btn btn-primary" id="addNewDayButton">Add Day</button> <!-- Make sure the ID here matches the ID used in itinerary.js -->
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="module" src="~/js/itinerary.js" asp-append-version="true"></script>
+}

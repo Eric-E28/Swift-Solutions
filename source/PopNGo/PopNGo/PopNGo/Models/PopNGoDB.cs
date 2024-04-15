@@ -30,6 +30,11 @@ public partial class PopNGoDB : DbContext
     public virtual DbSet<Tag> Tags { get; set; }
 
     public virtual DbSet<TicketLink> TicketLinks { get; set; }
+    public virtual DbSet<ItineraryDaySection> ItineraryDaySections { get; set; }
+    public virtual DbSet<ItineraryChecklist> ItineraryChecklists { get; set; }
+    public virtual DbSet<ItineraryChecklistItem> ItineraryChecklistItems { get; set; }  // Adding DbSet for ItineraryChecklistItem
+
+
 
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //     => optionsBuilder.UseSqlServer("Name=ServerConnection");
@@ -99,6 +104,26 @@ public partial class PopNGoDB : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_TicketLink_EventID");
         });
+        modelBuilder.Entity<ItineraryChecklistItem>(entity =>
+        {
+            entity.HasKey(e => e.ID).HasName("PK__ItineraryChecklistItem");
+            entity.HasOne(d => d.ItineraryChecklist)
+                  .WithMany(p => p.ItineraryChecklistItems)
+                  .HasForeignKey(d => d.ItineraryChecklistId)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_ItineraryChecklistItem_ItineraryChecklist");
+        });
+
+        modelBuilder.Entity<ItineraryChecklist>(entity =>
+        {
+            entity.HasKey(e => e.ID).HasName("PK__ItineraryChecklist");
+            entity.HasOne(d => d.ItineraryDaySection)
+                  .WithMany(p => p.ItineraryChecklists)
+                  .HasForeignKey(d => d.ItineraryDaySectionId)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_ItineraryChecklist_ItineraryDaySectionId");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

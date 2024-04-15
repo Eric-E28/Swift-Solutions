@@ -20,11 +20,13 @@ namespace PopNGo_BDD_Tests.Shared
         public static readonly Dictionary<string, string> Paths = new()
         {
             { "Home" , "/" },
-            { "Explore", "/Home/Explore"},
-            { "Favorites", "/Favorites" },
-            { "Login", "/Identity/Account/Login" },
             { "Admin", "/Admin" },
             { "Notifications", "/Admin/ScheduledNotifications" },
+            { "Login", "/Identity/Account/Login" },
+            { "SelectGroup", "/MyAccount/SelectGroup" },
+            { "AdminQuestions", "/Admin/Questions" },
+            { "AdminQuestionsCreate", "/Admin/Questions/Create" },
+            { "Itinerary", "/Home/Itinerary" }
         };
 
         public static string PathFor(string pathName) => Paths[pathName];

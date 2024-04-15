@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using PopNGo.DAL.Abstract;
 using PopNGo.DAL.Concrete;
 using Microsoft.Extensions.Hosting;
+using PopNGo.Repositories;
 
 namespace PopNGo;
 
@@ -70,6 +71,7 @@ public class Program
         builder.Services.AddScoped<IEventRepository, EventRepository>();
         builder.Services.AddScoped<IBookmarkListRepository, BookmarkListRepository>();
         builder.Services.AddScoped<IScheduledNotificationRepository, ScheduledNotificationRepository>();
+        builder.Services.AddScoped<IItineraryDaySectionRepository, ItineraryDaySectionRepository>();
 
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

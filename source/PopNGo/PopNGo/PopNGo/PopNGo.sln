@@ -5,6 +5,10 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PopNGo", "PopNGo.csproj", "{6926F81D-CFF4-4820-883D-4F7B58F50A89}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PopNGo_BDD_Test", "..\PopNGo_BDD_Test\PopNGo_BDD_Test.csproj", "{8D4563C0-5168-414D-8B63-E1FF19AF4E72}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PopNGo_BDD_Tests", "..\PopNGo_BDD_Tests\PopNGo_BDD_Tests.csproj", "{9CC28614-7543-4705-AC37-1274B92A8C58}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{6926F81D-CFF4-4820-883D-4F7B58F50A89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6926F81D-CFF4-4820-883D-4F7B58F50A89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6926F81D-CFF4-4820-883D-4F7B58F50A89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D4563C0-5168-414D-8B63-E1FF19AF4E72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D4563C0-5168-414D-8B63-E1FF19AF4E72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D4563C0-5168-414D-8B63-E1FF19AF4E72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D4563C0-5168-414D-8B63-E1FF19AF4E72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CC28614-7543-4705-AC37-1274B92A8C58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CC28614-7543-4705-AC37-1274B92A8C58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CC28614-7543-4705-AC37-1274B92A8C58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CC28614-7543-4705-AC37-1274B92A8C58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

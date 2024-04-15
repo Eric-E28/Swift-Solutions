@@ -99,7 +99,7 @@
 
 input:active,
 input:focus {
-    box-shadow: 0 0 0 0.1rem #dc9b4a, 0 0 0 0.2rem #ff6800 !important;
+    box-shadow: none !important;
 }
 
 input[type="text"],
@@ -111,8 +111,7 @@ input[type="password"]:focus
 /* input:-internal-autofill,
 input:-internal-autofill-selected,
 input:-webkit-autofill,
-input:-webkit-autofill-selected { */
-{
+input:-webkit-autofill-selected { */ {
     /* background-color: #ff9b58 !important;
     color: #d35400 !important; */
     background-color: #313030 !important;

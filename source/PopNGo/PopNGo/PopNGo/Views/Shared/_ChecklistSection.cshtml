@@ -1,0 +1,18 @@
+﻿<template id="checklist-template">
+    <div class="card rounded mb-3">
+        <div class="card-body p-5" id="ChecklistContainerId">
+            <div class="card-header bg-none mb-4 p-0">
+                <h5 class="mb-2 editable-text" contenteditable="true" data-placeholder="Checklist Header"></h5>
+            </div>
+            <div class="add-some-items">
+                <button class="btn btn-sm add-items-btn">+ Add Some Items</button>
+            </div>
+        </div>
+    </div>
+    <div class="checklist-box">
+        <!-- Ensure the button includes data-checklist-id for referencing -->
+        <button class="btn btn-primary" id="addBoxButton" data-checklist-id="ChecklistContainerId">
+            <i class="fa fa-list-ul" aria-hidden="true"></i>
+        </button>
+    </div>
+</template>

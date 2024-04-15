@@ -1,0 +1,24 @@
+﻿<template id="day-section-template">
+    <div class="bordered-panel" data-id="">
+        <div class="panel panel-default mb-xxl-4 mt-xxl-4">
+            <div class="panel-heading d-flex align-items-center" role="tab" id="HeadingId">
+                <a id="collapse-section" role="button" class="me-3 collapse-section" data-bs-toggle="collapse" href="#CollapseId" aria-expanded="true" aria-controls="CollapseId">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <div class="flex-grow-1" id="section-header">
+                    <h4 class="sub-title mb-0">
+                        <span class="editable-text" contenteditable="true" data-placeholder="Title"></span>
+                    </h4>
+                    @* This is where the date picker template should be appending into. *@
+
+                </div>
+                <span class="ms-auto trash-btn" onclick="removeDaySection"><i class="fas fa-trash"></i></span>
+            </div>
+            <div id="CollapseId" class="panel-collapse collapse" role="tabpanel" aria-labelledby="HeadingId">
+                <div class="panel-body" style="background-color: #3F3F3F !important;">
+                    @* This is where the checklist template should be appending into. *@
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
