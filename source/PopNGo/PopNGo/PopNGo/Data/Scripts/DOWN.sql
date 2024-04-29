@@ -11,6 +11,12 @@ ALTER TABLE [TicketLink] DROP CONSTRAINT FK_TicketLink_EventID;
 
 ALTER TABLE [ScheduledNotification] DROP CONSTRAINT FK_ScheduledNotification_UserID;
 
+-- Drop the tables
+DROP TABLE [PG_User];
+DROP TABLE [TicketLink];
+DROP TABLE [TAG];
+DROP TABLE [FavoriteEvents];
+DROP TABLE [BookmarkList];
 ALTER TABLE [WeatherForecast] DROP CONSTRAINT FK_WeatherForecast_WeatherId;
 
 ALTER TABLE [EmailHistory] DROP CONSTRAINT FK_EmailHistory_UserID;
@@ -21,8 +27,15 @@ DROP TABLE [TicketLink];
 DROP TABLE [TAG];
 DROP TABLE [FavoriteEvents];
 DROP TABLE [BookmarkList];
+-- Drop the tables
+DROP TABLE [PG_User];
+DROP TABLE [TicketLink];
+DROP TABLE [TAG];
+DROP TABLE [FavoriteEvents];
+DROP TABLE [BookmarkList];
 DROP TABLE [EventHistory];
 DROP TABLE [Event];
+DROP TABLE [ScheduledNotification];
 DROP TABLE [ScheduledNotification];
 DROP TABLE [WeatherForecast];
 DROP TABLE [Weather];

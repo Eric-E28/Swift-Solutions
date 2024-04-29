@@ -27,7 +27,6 @@ const pageSize = 10;
 let userLocation = {};
 let distanceUnit = "miles"
 
-
 // Fetch event data and display it
 // Call getLocation when the script is loaded
 document.addEventListener("DOMContentLoaded", async function () {
