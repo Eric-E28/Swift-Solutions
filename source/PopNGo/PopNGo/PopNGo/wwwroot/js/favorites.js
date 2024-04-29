@@ -7,15 +7,6 @@ import { buildEventCard, validateBuildEventCardProps } from './ui/buildEventCard
 import { buildEventDetailsModal, validateBuildEventDetailsModalProps } from './ui/buildEventDetailsModal.js';
 import { formatTags } from './util/tags.js';
 import { showToast } from './util/toast.js';
-import { applyFiltersAndSortEvents } from './util/filter.js';
-import { showDeleteBookmarkListConfirmationModal } from './util/showDeleteBookmarkListConfirmationModal.js';
-import { deleteBookmarkList } from './api/bookmarkLists/deleteBookmarkList.js';
-import { buildAndShowEditBookmarkListModal } from './ui/buildAndShowEditBookmarkListModal.js';
-import { updateBookmarkListName } from './api/bookmarkLists/updateBookmarkListName.js';
-import { showDeleteFavoriteEventConfirmationModal } from './ui/showDeleteFavoriteEventConfirmationModal.js';
-import { removeEventFromFavorites } from './api/favorites/removeEventFromFavorites.js';
-
-let currentBookmarkList = null;
 
 document.addEventListener('DOMContentLoaded', function () {
     initPage();
@@ -224,8 +215,7 @@ async function onClickDetailsAsync(eventInfo) {
         description: (eventInfo.eventDescription ?? 'No description') + '...',
         date: new Date(eventInfo.eventDate),
         fullAddress: eventInfo.eventLocation,
-        eventOriginalLink: eventInfo.eventOriginalLink,
-        ticketLinks: eventInfo.ticketLinks,
+        ticketLinks : eventInfo.ticketLinks,
         venueName: eventInfo.venueName,
         venuePhoneNumber: eventInfo.venuePhoneNumber,
         venueRating: eventInfo.venueRating,
@@ -239,9 +229,4 @@ async function onClickDetailsAsync(eventInfo) {
         modal.show();
     };
 }
-
-// Listener for filter button
-document.getElementById('filter-button').addEventListener('click', function () {
-    displayEventsFromBookmarkList(currentBookmarkList);
-});
 
