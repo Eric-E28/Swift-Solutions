@@ -60,8 +60,6 @@ export const buildEventDetailsModal = (eventDetailsModalElement, props) => {
 
     if (!addToCalendarButtonContainer.querySelector('button')) {
         addToCalendarButtonContainer.appendChild(addToCalendarButton);
-    } else {
-        console.error("Button already exists in the container.");
     }
 
     // Buy Tickets Dropdown
@@ -73,13 +71,16 @@ export const buildEventDetailsModal = (eventDetailsModalElement, props) => {
     buildVenueDetailsModal(eventDetailsModalElement, props);
 
     // Populate view original post link
-    if (!props.eventOriginalLink) {
-        eventDetailsModalElement.querySelector('#original-post-link').disabled = true;
-    }
-    else {
-        const viewOriginalPostLink = eventDetailsModalElement.querySelector('#original-post-link');
-        viewOriginalPostLink.href = props.eventOriginalLink;
-        viewOriginalPostLink.target = '_blank';
+    const viewOriginalPostLink = eventDetailsModalElement.querySelector('#original-post-link');
+    if (viewOriginalPostLink) {
+        if (!props.eventOriginalLink) {
+            viewOriginalPostLink.disabled = true;
+        } else {
+            viewOriginalPostLink.href = props.eventOriginalLink;
+            viewOriginalPostLink.target = '_blank';
+        }
+    } else {
+        console.error("Element #original-post-link not found in the DOM.");
     }
 
 
