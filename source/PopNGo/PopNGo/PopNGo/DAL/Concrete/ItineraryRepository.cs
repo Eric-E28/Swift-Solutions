@@ -9,7 +9,7 @@ using Microsoft.Identity.Client;
 
 namespace PopNGo.DAL.Concrete
 {
-    public class ItineraryRepository : Repository<Models.ItineraryEvent>, IItineraryRepository
+    public class ItineraryRepository : Repository<Models.Itinerary>, IItineraryRepository
     {
         private readonly DbSet<Models.Itinerary> _itinerary;
         private readonly DbSet<Models.Event> _events;
@@ -23,88 +23,85 @@ namespace PopNGo.DAL.Concrete
             _itineraryEvents = context.ItineraryEvents;
         }
 
-
-        public List<PopNGo.Models.DTO.Event> GetEventsFromItinerary(int userId, int itineraryId)
+        public void CreateNewItinerary(int userId, string itineraryTitle)
         {
-
-            return _itineraryEvents
-                   .Where(eh => eh.Itinerary.UserId == userId && eh.ItineraryId == itineraryId)
-                   .OrderBy(e => e.Event.EventDate)
-                   .Select(eh => eh.Event.ToDTO()) // Move Select after OrderBy
-                   .ToList();
-
-        }
-        public void AddOrUpdateItineraryDayEvent(int userId, string apiEventId, int itineraryId)
-        {
-            if (string.IsNullOrEmpty(apiEventId))
+            // Check if the itinerary title is null or empty
+            if (string.IsNullOrEmpty(itineraryTitle))
             {
-                throw new ArgumentException("EventId cannot be null or empty", nameof(apiEventId));
+                throw new ArgumentException("Itinerary title cannot be null or empty", nameof(itineraryTitle));
             }
 
+            // Attempt to find an existing itinerary that matches the provided userId and title
+            var existingItinerary = _itinerary.FirstOrDefault(it => it.UserId == userId && it.ItineraryTitle == itineraryTitle);
 
-            var eventEntity = _events.FirstOrDefault(e => e.ApiEventId == apiEventId);
-
-
-            if (eventEntity == null)
+            if (existingItinerary != null)
             {
-                throw new ArgumentException($"No event found with the id {apiEventId}", nameof(apiEventId));
-            }
-
-            var itinerary = _itinerary.FirstOrDefault(i => i.Id == itineraryId && i.UserId == userId);
-            if (itinerary == null)
-            {
-                throw new InvalidOperationException("No valid itinerary found for the given user and itinerary ID.");
-            }
-
-            var itineraryEvent = _itineraryEvents
-                .Include(ie => ie.Event)
-                .Include(ie => ie.Itinerary)
-                .FirstOrDefault(ie => ie.Event.ApiEventId == apiEventId && ie.ItineraryId == itineraryId);
-
-            if (itineraryEvent != null)
-            {
-                itineraryEvent.ItineraryId = itinerary.Id; // Ensure it is linked to the right itinerary
-                itineraryEvent.EventId = eventEntity.Id; // Update with the correct event ID if needed
-                AddOrUpdate(itineraryEvent);
+                // Update existing itinerary
+                existingItinerary.ItineraryTitle = itineraryTitle;
+                try
+                {
+                    AddOrUpdate(existingItinerary);
+                }
+                catch (Exception ex)
+                {
+                    // Properly handle the exception
+                    throw new Exception("Error updating existing itinerary", ex);
+                }
             }
             else
             {
-                // Create a new ItineraryEvent if not found
-                var newItineraryEvent = new Models.ItineraryEvent
+                // Create a new Itinerary since one does not exist
+                var newItinerary = new Models.Itinerary
                 {
-                    ItineraryId = itinerary.Id, // Directly use the provided itineraryId
-                    EventId = eventEntity.Id
+                    UserId = userId,
+                    ItineraryTitle = itineraryTitle
                 };
-                AddOrUpdate(newItineraryEvent);
+
+                // Add the new Itinerary
+                AddOrUpdate(newItinerary);
             }
         }
-
-
-        public void DeleteEventFromItinerary(int userId, string apiEventId, int itineraryId)
+        public List<PopNGo.Models.DTO.Itinerary> GetAllItinerary(int userId)
         {
-            if (string.IsNullOrEmpty(apiEventId))
+            return _itinerary
+                .Where(i => i.UserId == userId)
+                .Select(i => new PopNGo.Models.DTO.Itinerary
+                {
+                    Id = i.Id,
+                    UserId = i.UserId,
+                    ItineraryTitle = i.ItineraryTitle,
+                    Events = i.ItineraryEvents.Select(ie => new PopNGo.Models.DTO.Event
+                    {
+                        // Directly access ItineraryId from the ItineraryEvent join entity
+                        ItineraryId = ie.ItineraryId,
+                        EventName = ie.Event.EventName, // Map the 'EventName' from the Event entity
+                        EventDate = ie.Event.EventDate ?? DateTime.MinValue, // Handle nullable DateTime if necessary
+                        EventDescription = ie.Event.EventDescription,
+                        EventLocation = ie.Event.EventLocation,
+                        EventImage = ie.Event.EventImage,
+                        ApiEventID = ie.Event.ApiEventId
+                        // Additional fields that you require in your DTO
+                    }).ToList()
+                }).ToList();
+        }
+
+        public void DeleteItinerary(int itineraryId)
+        {
+            var itinerary = _itinerary.Include(i => i.ItineraryEvents).FirstOrDefault(i => i.Id == itineraryId);
+
+            if (itinerary == null)
             {
-                throw new ArgumentException("EventId cannot be null or empty", nameof(apiEventId));
+                throw new ArgumentException("Itinerary not found", nameof(itineraryId));
             }
 
-            var itineraryEvent = _itineraryEvents
-                .Include(ie => ie.Event)
-                .Include(ie => ie.Itinerary)
-                .FirstOrDefault(ie => ie.Event.ApiEventId == apiEventId && ie.Itinerary.UserId == userId && ie.ItineraryId == itineraryId);
-
-            if (itineraryEvent == null)
+            // Delete all related ItineraryEvents
+            var itineraryEvents = itinerary.ItineraryEvents.ToList();
+            foreach (var itineraryEvent in itineraryEvents)
             {
-                throw new InvalidOperationException("Event not found or does not belong to the user's itinerary.");
+                _itineraryEvents.Remove(itineraryEvent);  // Using context directly for clarity
             }
-
-            try
-            {
-                Delete(itineraryEvent);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error deleting event from itinerary", ex);
-            }
+            // Now, remove the itinerary itself using the Delete method of the Repository
+            Delete(itinerary);
         }
     }
 }

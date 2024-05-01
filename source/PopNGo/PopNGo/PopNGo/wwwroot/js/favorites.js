@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 async function createNewItinerary(itineraryTitle) {
     console.log('Creating new itinerary with title:', itineraryTitle);
-    let url = `/api/ItineraryEventApi/ItineraryEvent?itineraryTitle=${itineraryTitle}`;
+    let url = `/api/ItineraryApi/Itinerary?itineraryTitle=${itineraryTitle}`;
     const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -323,7 +323,7 @@ async function populateItineraryDropdown(apiEventID) {
 }
 
 async function addEventToItinerary(itineraryId, apiEventId) {
-    const url = `/api/ItineraryApi/ItineraryEvent/${apiEventId}/${itineraryId}`;
+    const url = `/api/ItineraryEventApi/ItineraryEvent/${apiEventId}/${itineraryId}`;
     try {
         const response = await fetch(url, {
             method: 'POST',

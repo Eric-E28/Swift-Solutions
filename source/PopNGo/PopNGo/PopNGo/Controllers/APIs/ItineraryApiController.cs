@@ -23,7 +23,6 @@ namespace PopNGo.Controllers.APIs
         private readonly IItineraryRepository _itineraryRepository;
         private readonly UserManager<PopNGoUser> _userManager;
         private readonly IPgUserRepository _pgUserRepository;
-
         public ItineraryApiController(PopNGoDB context, UserManager<PopNGoUser> userManager, IItineraryRepository itineraryRepository, IPgUserRepository pgUserRepository)
         {
             _context = context;
@@ -32,12 +31,33 @@ namespace PopNGo.Controllers.APIs
             _pgUserRepository = pgUserRepository;
         }
 
-        // GET: api/ItineraryApi
+        [HttpPost("Itinerary")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateNewItinerary(string itineraryTitle)
+        {
+            PopNGoUser user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+
+            PgUser pgUser = _pgUserRepository.GetPgUserFromIdentityId(user.Id);
+            if (pgUser == null)
+            {
+                return Unauthorized();
+            }
+
+            _itineraryRepository.CreateNewItinerary(pgUser.Id, itineraryTitle);
+            return Ok();
+        }
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Models.DTO.Event>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Models.DTO.Itinerary>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<IEnumerable<Models.DTO.Event>>> GetUserEventFromItinerary(int itineraryId)
+        public async Task<ActionResult<IEnumerable<Models.DTO.Itinerary>>> GetUserEventFromItinerary()
         {
             PopNGoUser user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -52,7 +72,7 @@ namespace PopNGo.Controllers.APIs
             }
 
             // Replace this with your logic to get events from itinerary based on pgUser.Id
-            IEnumerable<Models.DTO.Event> events = _itineraryRepository.GetEventsFromItinerary(pgUser.Id, itineraryId);
+            IEnumerable<Models.DTO.Itinerary> events = _itineraryRepository.GetAllItinerary(pgUser.Id);
 
             if (events == null || !events.Any())
             {
@@ -62,57 +82,44 @@ namespace PopNGo.Controllers.APIs
             return Ok(events);
         }
 
-
-        [HttpPost("ItineraryEvent/{apiEventId}/{itineraryId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpDelete("{itineraryId}")]  // Specify the route to include the itinerary ID
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> AddingToEventFromItineraries(string apiEventId, int itineraryId)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> DeleteItinerary(int itineraryId)
         {
-            PopNGoUser user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return Unauthorized();
-            }
-
-
-            PgUser pgUser = _pgUserRepository.GetPgUserFromIdentityId(user.Id);
-            if (pgUser == null)
-            {
-                return Unauthorized();
-            }
-
-            _itineraryRepository.AddOrUpdateItineraryDayEvent(pgUser.Id, apiEventId, itineraryId);
-            return Ok();
-        }
-
-        [HttpDelete("DeleteEventFromItinerary/{apiEventId}/{itineraryId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> DeleteEventFromItinerary(string apiEventId, int itineraryId)
-        {
-            PopNGoUser user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return Unauthorized();
-            }
-
-            PgUser pgUser = _pgUserRepository.GetPgUserFromIdentityId(user.Id);
-            if (pgUser == null)
-            {
-                return Unauthorized();
-            }
-
             try
             {
-                _itineraryRepository.DeleteEventFromItinerary(pgUser.Id, apiEventId, itineraryId);
-                return Ok();
+                PopNGoUser user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
+
+                PgUser pgUser = _pgUserRepository.GetPgUserFromIdentityId(user.Id);
+                if (pgUser == null)
+                {
+                    return Unauthorized();
+                }
+
+                // Perform the deletion
+                _itineraryRepository.DeleteItinerary(itineraryId);
+
+                // If no exception was thrown, deletion was successful
+                return Ok($"Itinerary with ID {itineraryId} deleted successfully.");
+            }
+            catch (ArgumentException ex)
+            {
+                // If the itinerary was not found, return a 404 error
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error deleting event: {ex.Message}");
+                // For any other exceptions, return a 500 internal server error
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
     }
 }

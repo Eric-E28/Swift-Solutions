@@ -71,19 +71,14 @@ export const buildEventDetailsModal = (eventDetailsModalElement, props) => {
     buildVenueDetailsModal(eventDetailsModalElement, props);
 
     // Populate view original post link
-    const viewOriginalPostLink = eventDetailsModalElement.querySelector('#original-post-link');
-    if (viewOriginalPostLink) {
-        if (!props.eventOriginalLink) {
-            viewOriginalPostLink.disabled = true;
-        } else {
-            viewOriginalPostLink.href = props.eventOriginalLink;
-            viewOriginalPostLink.target = '_blank';
-        }
-    } else {
-        console.error("Element #original-post-link not found in the DOM.");
+    if (!props.eventOriginalLink) {
+        eventDetailsModalElement.querySelector('#original-post-link').disabled = true;
     }
-
-
+    else {
+        const viewOriginalPostLink = eventDetailsModalElement.querySelector('#original-post-link');
+        viewOriginalPostLink.href = props.eventOriginalLink;
+        viewOriginalPostLink.target = '_blank';
+    }
 }
 
 /**

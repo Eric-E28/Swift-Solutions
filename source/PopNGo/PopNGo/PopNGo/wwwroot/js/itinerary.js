@@ -1,4 +1,4 @@
-﻿import { getAllUserEventsFromItinerary } from './api/itinerary/itineraryApi.js';
+﻿import { getAllUserEventsFromItinerary, addEventToItinerary } from './api/itinerary/itineraryApi.js';
 import { formatStartTime } from './util/formatStartTime.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -101,7 +101,7 @@ function attachDeleteEventListeners() {
 
 async function deleteEvent(apiEventID, itineraryId) {
     try {
-        let response = await fetch(`/api/ItineraryApi/DeleteEventFromItinerary/${apiEventID}/${itineraryId}`, {
+        let response = await fetch(`/api/ItineraryEventApi/DeleteEventFromItinerary/${apiEventID}/${itineraryId}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -120,7 +120,7 @@ async function deleteItinerary(itineraryId) {
     if (!confirm('Are you sure you want to delete this itinerary?')) return;
 
     try {
-        let response = await fetch(`/api/ItineraryEventApi/${itineraryId}`, {
+        let response = await fetch(`/api/ItineraryApi/${itineraryId}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
         });
