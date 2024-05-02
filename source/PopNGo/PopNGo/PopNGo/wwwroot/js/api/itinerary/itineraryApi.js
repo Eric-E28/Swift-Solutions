@@ -1,4 +1,4 @@
-﻿export async function getAllUserEventsFromItinerary() {
+export async function getAllUserEventsFromItinerary() {
     let url = `/api/ItineraryApi`;
     const res = await fetch(url, {
         method: 'GET',
@@ -32,6 +32,7 @@ export async function addEventToItinerary(itineraryId, apiEventId) {
             alert(`Failed to add event to itinerary: ${errorText}`);
             return;
         }
+        alert('Event successfully added to the itinerary!');
     } catch (error) {
         console.error('Error adding event to itinerary:', error);
         alert('Error adding event to itinerary. Please try again.');

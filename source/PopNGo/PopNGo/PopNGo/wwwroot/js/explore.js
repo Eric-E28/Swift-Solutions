@@ -151,7 +151,6 @@ async function onClickDetailsAsync(eventInfo) {
         buildEventDetailsModal(document.getElementById('event-details-modal'), eventDetailsModalProps);
         const modal = new bootstrap.Modal(document.getElementById('event-details-modal'));
         modal.show();
-        console.log(eventInfo.apiEventID);
         currentApiEventID = eventInfo.apiEventID;
         console.log("Current ApiEventId ", currentApiEventID);
         populateItineraryDropdown(currentApiEventID);
@@ -573,9 +572,6 @@ async function populateItineraryDropdown(apiEventID) {
                 link.href = "#";
                 link.dataset.itineraryId = itinerary.id;  // Assuming each itinerary has an 'id' property
                 link.addEventListener('click', function () {
-                    console.log("This is the itinerary ID for new itinerary:", this.dataset.itineraryId);
-                    console.log("This is the itinerary ID for new itinerary:", apiEventID);
-
                     addEventToItinerary(this.dataset.itineraryId, apiEventID);
                 });
                 item.appendChild(link);

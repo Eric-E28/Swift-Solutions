@@ -249,6 +249,7 @@ document.getElementById('filter-button').addEventListener('click', function () {
     displayEventsFromBookmarkList(currentBookmarkList);
 });
 
+
 async function createNewItinerary(itineraryTitle) {
     console.log('Creating new itinerary with title:', itineraryTitle);
     let url = `/api/ItineraryApi/Itinerary?itineraryTitle=${itineraryTitle}`;
@@ -285,14 +286,12 @@ async function populateItineraryDropdown(apiEventID) {
     try {
         const itineraries = await getAllUserEventsFromItinerary();
         const dropdownMenu = document.getElementById('dropdownMenuButton1').nextElementSibling;
-
-        // Clear existing entries except for the first one
+      
         while (dropdownMenu.children.length > 1) {
             dropdownMenu.removeChild(dropdownMenu.lastChild);
         }
-
-        // Populate dropdown
-        itineraries.forEach((itinerary) => {
+      
+        itineraries.forEach(itinerary => {
             const item = document.createElement('li');
             const link = document.createElement('a');
             link.className = 'dropdown-item';

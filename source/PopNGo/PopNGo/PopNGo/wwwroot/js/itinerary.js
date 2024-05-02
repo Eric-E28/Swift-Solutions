@@ -1,4 +1,4 @@
-﻿import { getAllUserEventsFromItinerary } from './api/itinerary/itineraryApi.js';
+import { getAllUserEventsFromItinerary } from './api/itinerary/itineraryApi.js';
 import { formatStartTime } from './util/formatStartTime.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
