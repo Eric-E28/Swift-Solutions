@@ -1,11 +1,29 @@
 import { getAllUserEventsFromItinerary } from './api/itinerary/itineraryApi.js';
 import { formatStartTime } from './util/formatStartTime.js';
+import { getPlaceSuggestions } from './api/itinerary/placeSuggestion.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const imgElement = document.createElement('img');
+    imgElement.src = "https://lh5.googleusercontent.com/p/AF1QipN0DMh5JuH9llw9JY3XHaq0HmclMYv28eJB03Yu=w128-h92-k-no"; // Test URL, replace with your own if needed
+    imgElement.alt = "Testing Image Load";
+    imgElement.style.display = "none"; // Hide since it's only for testing
+
+    imgElement.onerror = () => {
+        console.log("Image failed to load");
+        // You can handle additional logic here, like setting a placeholder
+    };
+    imgElement.onload = () => {
+        console.log("Image loaded successfully");
+    };
+
+    document.body.appendChild(imgElement);
+
     try {
+       
         await initPage();
 
         const accordionExample = document.querySelector('#accordionExample');
+        attachEventListeners(); // Make sure this is called after updating the DOM
 
         let accordionHtml = '';
         itineraries.forEach((itinerary, index) => {
@@ -75,19 +93,16 @@ function createAccordionHtml(itinerary, index) {
         </div>
     `;
 }
-
 function createEventHtml(eventData, itineraryId) {
+    const eventImage = eventData.eventImage || '/path/to/placeholder-image.png'; // Default image if not provided
     return `
         <div class="single-timeline-area" data-event-id="${eventData.apiEventID}" data-itinerary-id="${itineraryId}">
-            <div class="timeline-date">
-                <p>${new Date(eventData.eventDate).toLocaleDateString()}</p>
-            </div>
             <div class="row">
                 <div class="col">
                     <div class="card mb-3 bg-dark text-white">
                         <div class="row g-0 align-items-center">
                             <div class="col-md-4">
-                                <img src="${eventData.eventImage}" class="img-fluid rounded-start img-event" alt="${eventData.eventName} Image">
+                                <img src="${eventImage}" onerror="this.onerror=null; this.src='/path/to/placeholder-image.png';" class="img-fluid rounded-start img-event" alt="${eventData.eventName} Image">
                             </div>
                             <div class="col-md-7">
                                 <div class="card-body px-4 mx-4">
@@ -102,6 +117,13 @@ function createEventHtml(eventData, itineraryId) {
                                 </button>
                             </div>
                         </div>
+                    </div>
+                    <div class="single-timeline-area p-0 px-0  pb-3" data-event-id="${eventData.apiEventID}" data-itinerary-id="${itineraryId}" data-latitude="${eventData.latitude || ''}" data-longitude="${eventData.longitude || ''}">
+                        <p class="text-light">Recommended Places Near the event</p>
+                        <div class="btn btn-warning text-light" id="hotels-button-${eventData.latitude}">Hotels</div>
+                        <div class="btn btn-warning text-light" id="food-button-${eventData.latitude}">Food</div>
+                        <div class="btn btn-warning text-light" id="coffee-button-${eventData.latitude}">Coffee</div>
+                        <div class="pt-4 text-light" id="suggestions-container-${eventData.latitude}"></div>
                     </div>
                 </div>
             </div>
@@ -174,4 +196,107 @@ async function deleteItinerary(itineraryId) {
         console.error('Failed to delete the itinerary:', error);
         alert('Failed to delete the itinerary');
     }
+}
+function attachEventListeners() {
+    document.querySelectorAll('[id^="hotels-button-"], [id^="food-button-"], [id^="coffee-button-"]').forEach(button => {
+        button.addEventListener('click', function () {
+            const index = this.id.split('-').pop(); // Get the index from the button ID
+            const parent = this.closest('.single-timeline-area');
+            const latitude = parent.getAttribute('data-latitude');
+            const longitude = parent.getAttribute('data-longitude');
+            const type = this.id.split('-')[0].split('button')[0]; // Parse the type from ID
+            const suggestionsContainer = document.getElementById(`suggestions-container-${index}`);
+
+            // Toggle visibility if data is already fetched
+            if (suggestionsContainer.style.display === 'block') {
+                suggestionsContainer.style.display = 'none';
+            } else {
+                suggestionsContainer.style.display = 'block';
+                if (latitude && longitude) {
+                    // Fetch and display only if the container was previously hidden
+                    fetchAndDisplayPlaceSuggestions(type.charAt(0).toUpperCase() + type.slice(1), latitude, longitude, index);
+                } else {
+                    console.error(`Latitude or longitude is null for event at index ${index}: Lat ${latitude}, Lon ${longitude}`);
+                    alert('Location data is not available for this event.');
+                }
+            }
+        });
+    });
+}
+
+
+
+async function fetchAndDisplayPlaceSuggestions(query, latitude, longitude, index) {
+    console.log(`Fetching places for ${query} at ${latitude}, ${longitude}`);
+    try {
+        const suggestions = await getPlaceSuggestions(query, latitude, longitude);
+        if (suggestions.length === 0) {
+            console.log('No suggestions found for the given location.');
+            alert('No suggestions available at this location.');
+        } else {
+            displaySuggestions(suggestions, index);
+        }
+    } catch (error) {
+        console.error(`Error fetching place suggestions: ${error.message}`);
+        alert(`Error: ${error.message}`);
+    }
+}
+function displaySuggestions(suggestions, index) {
+    const suggestionsContainer = document.getElementById(`suggestions-container-${index}`);
+    if (!suggestionsContainer) {
+        console.error(`Suggestions container not found for index ${index}`);
+        return;
+    }
+    suggestionsContainer.innerHTML = '';  // Clear previous content
+
+    suggestions.forEach(suggestion => {
+        const card = document.createElement('div');
+        card.className = 'card mb-3 clickable';  // Make sure 'clickable' styles the cursor appropriately
+        card.style = 'cursor: pointer;';  // Ensure the card is clickable
+        card.setAttribute('data-bs-toggle', 'modal');
+        card.setAttribute('data-bs-target', '#exampleModal');
+
+        // Define a consistent image path, handling the path correctly for the browser
+        const imagePath = suggestion.thumbnail && suggestion.thumbnail.trim() !== '' ? suggestion.thumbnail : '/media/images/placeholder_event_card_image.png';
+
+        card.innerHTML = `
+            <div class="row g-0 align-items-center">
+                <div class="col-md-4">
+                    <img src="${imagePath}" onerror="this.onerror=null; this.src='/media/images/placeholder_event_card_image.png';" class="img-fluid rounded-start" alt="Image of ${suggestion.title}" style="height: 100px; width: 90%; object-fit: cover;">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <p class="card-title">${suggestion.title}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        suggestionsContainer.appendChild(card);
+
+        // Event listener to update modal content on click
+        card.addEventListener('click', () => {
+            const modalTitle = document.getElementById('exampleModalLabel');
+            const modalBody = document.querySelector('.modal-body');
+            modalTitle.textContent = suggestion.title;
+            modalBody.innerHTML = formatModalBodyContent(suggestion);
+        });
+    });
+}
+
+function formatModalBodyContent(suggestion) {
+    let operatingHoursHTML = '';
+    if (suggestion.operating_hours) {
+        operatingHoursHTML = Object.keys(suggestion.operating_hours).map(day => `<p>${capitalizeFirstLetter(day)}: ${suggestion.operating_hours[day] || 'no information'}</p>`).join('');
+    }
+    return `
+        <p>Description: ${suggestion.description || 'no description available'}</p>
+        <p>Address: ${suggestion.address || 'no address available'}</p>
+        ${operatingHoursHTML}
+        <p>Phone: ${suggestion.phone || 'no phone available'}</p>
+        <p>Website: <a href="${suggestion.website}" target="_blank">${suggestion.website || 'no website available'}</a></p>
+    `;
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }
