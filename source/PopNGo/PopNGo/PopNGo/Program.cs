@@ -63,6 +63,19 @@ public class Program
             return new DistanceCalculatorService(httpClient, services.GetRequiredService<ILogger<DistanceCalculatorService>>());
         });
 
+        // REST API setup for the OpenAI API
+        string openAiUrl = "https://api.openai.com/";
+        string openAiApiKey = builder.Configuration["OpenAiApiKey"];
+
+        builder.Services.AddHttpClient<IOpenAiService, OpenAiService>((httpClient, services) =>
+        {
+            httpClient.BaseAddress = new Uri(openAiUrl);
+            httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {openAiApiKey}"); // Set API key
+            return new OpenAiService(httpClient, services.GetRequiredService<ILogger<OpenAiService>>());
+        });
+
+
         // REST API setup for the Weather Forecast API
         string weatherForecasterUrl = "https://visual-crossing-weather.p.rapidapi.com/forecast";
 
@@ -116,6 +129,7 @@ public class Program
         builder.Services.AddScoped<IItineraryRepository, ItineraryRepository>();
         builder.Services.AddScoped<IEventTagRepository, EventTagRepository>();
         builder.Services.AddScoped<IMapDirectionsService, MapDirectionsService>();
+        builder.Services.AddScoped<IRecommendedEventRepository, RecommendedEventRepository>();
 
         // Add Google Authentication
         builder.Services.AddAuthentication().AddGoogle(googleOptions =>

@@ -110,14 +110,14 @@ function createNotificationEntry(itineraryId, notification) {
     notificationElement.className = 'notification';
 
     const notificationAddressElement = document.createElement('input');
-    notificationAddressElement.className = 'col-8';
+    notificationAddressElement.className = 'col-sm-8';
     notificationAddressElement.id = 'notification-address';
     notificationAddressElement.type = 'text';
     notificationAddressElement.value = notification?.address || "";
     notificationAddressElement.placeholder = 'Email Address';
 
     const notificationDeleteButton = document.createElement('button');
-    notificationDeleteButton.className = 'btn btn-danger col-2 offset-2';
+    notificationDeleteButton.className = 'btn btn-danger col-sm-2 offset-4 offset-sm-2';
     notificationDeleteButton.textContent = 'Delete';
     notificationDeleteButton.addEventListener('click', () => {
         notificationElement.remove();
